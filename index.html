@@ -361,7 +361,7 @@
                         <figcaption>QRIS ALLPAY</figcaption>
                     </figure>
                 </div>
-                <p>Setelah membayar, <strong>screenshot bukti transfernya</strong> untuk diunggah di formulir bawah.</p>
+                <p>Setelah membayar, <strong>unggah bukti transfer Anda ke situs seperti <a href="https://imgbb.com/" target="_blank">imgbb.com</a></strong>, lalu salin URL gambar dan tempel di formulir bawah.</p>
             </div>
             
             <form id="orderForm">
@@ -382,8 +382,8 @@
                     <input type="email" id="email_pembeli" name="email_pembeli" required>
                 </div>
                 <div class="form-group">
-                    <label for="screenshot">Upload Bukti Pembayaran (SS)</label>
-                    <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
+                    <label for="screenshot">URL Bukti Pembayaran</label>
+                    <input type="url" id="screenshot" name="screenshot_url" placeholder="https://i.ibb.co/contoh/bukti-transfer.jpg" required>
                 </div>
                 <button type="submit" id="submitBtn" class="btn">Kirim Pesanan & Konfirmasi</button>
             </form>
@@ -423,7 +423,7 @@
                 });
             });
 
-            // --- Fungsi untuk mengirim email ---
+            // --- Fungsi untuk mengirim email (LOGIKA BARU) ---
             orderForm.addEventListener('submit', function(event) {
                 event.preventDefault();
 
@@ -434,65 +434,45 @@
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Mengirim...';
 
-                // Ambil file yang diupload
-                const file = document.getElementById('screenshot').files[0];
+                // Siapkan parameter untuk template EmailJS
+                // Tidak perlu lagi membaca file, langsung ambil value dari setiap input
+                const templateParams = {
+                    nama: document.getElementById('nama').value,
+                    no_wa: document.getElementById('no_wa').value,
+                    email_pembeli: document.getElementById('email_pembeli').value,
+                    pesanan: document.getElementById('pesanan').value,
+                    // Mengambil URL dari input, bukan data file
+                    screenshot_url: document.getElementById('screenshot').value, 
+                };
                 
-                if (file) {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = function(e) {
-                        const fileData = e.target.result;
+                // =================================================================
+                // PENTING: GANTI DENGAN SERVICE ID & TEMPLATE ID ANDA
+                // =================================================================
+                const serviceID = 'service_20v0u5o';
+                const templatePenjualID = 'template_d5d4rxh';
+                const templatePembeliID = 'template_63bpjom';
 
-                        // Siapkan parameter untuk template EmailJS
-                        const templateParams = {
-                            nama: document.getElementById('nama').value,
-                            no_wa: document.getElementById('no_wa').value,
-                            email_pembeli: document.getElementById('email_pembeli').value,
-                            pesanan: document.getElementById('pesanan').value,
-                            screenshot_data: fileData, // Data file dalam bentuk base64
-                        };
-                        
-                        // =================================================================
-                        // PENTING: GANTI DENGAN SERVICE ID & TEMPLATE ID ANDA
-                        // =================================================================
-                        const serviceID = 'service_20v0u5o';
-                        const templatePenjualID = 'template_d5d4rxh';
-                        const templatePembeliID = 'template_63bpjom';
-
-                        // Kirim email ke PENJUAL terlebih dahulu
-                        emailjs.send(serviceID, templatePenjualID, templateParams)
-                            .then(() => {
-                                // Jika berhasil, kirim email konfirmasi ke PEMBELI
-                                return emailjs.send(serviceID, templatePembeliID, templateParams);
-                            })
-                            .then(() => {
-                                // Jika kedua email berhasil terkirim
-                                alert('Pesanan Berhasil Dikirim! Cek email Anda untuk konfirmasi. Kami akan segera mengirim data akun Anda.');
-                                orderForm.reset();
-                            })
-                            .catch((err) => {
-                                // Jika ada error
-                                alert('Gagal mengirim pesanan. Silakan coba lagi.\nError: ' + JSON.stringify(err));
-                            })
-                            .finally(() => {
-                                // Sembunyikan loading dan kembalikan tombol ke state normal
-                                loadingOverlay.style.display = 'none';
-                                submitBtn.disabled = false;
-                                submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
-                            });
-                    };
-                    reader.onerror = function (error) {
-                        alert('Error membaca file: ' + error);
+                // Kirim email ke PENJUAL terlebih dahulu
+                emailjs.send(serviceID, templatePenjualID, templateParams)
+                    .then(() => {
+                        // Jika berhasil, kirim email konfirmasi ke PEMBELI
+                        return emailjs.send(serviceID, templatePembeliID, templateParams);
+                    })
+                    .then(() => {
+                        // Jika kedua email berhasil terkirim
+                        alert('Pesanan Berhasil Dikirim! Cek email Anda untuk konfirmasi. Kami akan segera mengirim data akun Anda.');
+                        orderForm.reset();
+                    })
+                    .catch((err) => {
+                        // Jika ada error
+                        alert('Gagal mengirim pesanan. Silakan coba lagi.\nError: ' + JSON.stringify(err));
+                    })
+                    .finally(() => {
+                        // Sembunyikan loading dan kembalikan tombol ke state normal
                         loadingOverlay.style.display = 'none';
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
-                    };
-                } else {
-                    alert('Harap unggah bukti pembayaran!');
-                    loadingOverlay.style.display = 'none';
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
-                }
+                    });
             });
         });
     </script>
