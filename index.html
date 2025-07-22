@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Panel & VPS</title>
+    <style>
+        /* CSS Code */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .product-card .price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .product-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--secondary-color);
+        }
+
+        .product-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .product-card ul li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .product-card ul li::before {
+            content: '✓';
+            color: var(--success-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        #order-section {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-top: 50px;
+        }
+
+        .payment-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .payment-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .payment-section .qris-images {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .payment-section .qris-images img {
+            width: 150px;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+        }
+
+        #submitBtn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--success-color);
+            font-size: 1.1rem;
+        }
+
+        #submitBtn:hover {
+            background-color: #218838;
+        }
+        
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>📦 Daffa Store</h1>
+            <p>Solusi Hosting Panel & VPS Terpercaya</p>
+        </header>
+
+        <section id="panel">
+            <h2 class="section-title">Gaming Panel</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <h3>Panel 1GB</h3>
+                    <div class="price">1k <span>/bulan</span></div>
+                    <ul>
+                        <li>1 GB RAM</li>
+                        <li>5 GB Disk</li>
+                        <li>Unlimited CPU</li>
+                        <li>Lokasi Singapore</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="Panel 1GB (1k)">Pesan Sekarang</button>
+                </div>
+                <div class="product-card">
+                    <h3>Panel 2GB</h3>
+                    <div class="price">2k <span>/bulan</span></div>
+                    <ul>
+                        <li>2 GB RAM</li>
+                        <li>10 GB Disk</li>
+                        <li>Unlimited CPU</li>
+                        <li>Lokasi Singapore</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="Panel 2GB (2k)">Pesan Sekarang</button>
+                </div>
+                <div class="product-card"><h3>Panel 3GB</h3><div class="price">3k <span>/bulan</span></div><ul><li>3 GB RAM</li><li>15 GB Disk</li><li>Unlimited CPU</li><li>Lokasi Singapore</li></ul><button class="btn order-btn" data-product="Panel 3GB (3k)">Pesan Sekarang</button></div>
+                <div class="product-card"><h3>Panel 4GB</h3><div class="price">4k <span>/bulan</span></div><ul><li>4 GB RAM</li><li>20 GB Disk</li><li>Unlimited CPU</li><li>Lokasi Singapore</li></ul><button class="btn order-btn" data-product="Panel 4GB (4k)">Pesan Sekarang</button></div>
+                <div class="product-card"><h3>Panel 5GB</h3><div class="price">5k <span>/bulan</span></div><ul><li>5 GB RAM</li><li>25 GB Disk</li><li>Unlimited CPU</li><li>Lokasi Singapore</li></ul><button class="btn order-btn" data-product="Panel 5GB (5k)">Pesan Sekarang</button></div>
+                <div class="product-card"><h3>Panel 10GB</h3><div class="price">10k <span>/bulan</span></div><ul><li>10 GB RAM</li><li>50 GB Disk</li><li>Unlimited CPU</li><li>Lokasi Singapore</li></ul><button class="btn order-btn" data-product="Panel 10GB (10k)">Pesan Sekarang</button></div>
+                <div class="product-card">
+                    <h3>Panel Unlimited</h3>
+                    <div class="price">15k <span>/bulan</span></div>
+                    <ul>
+                        <li>Unlimited RAM</li>
+                        <li>Unlimited Disk</li>
+                        <li>Unlimited CPU</li>
+                        <li>Lokasi Singapore</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="Panel Unlimited (15k)">Pesan Sekarang</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="vps">
+            <h2 class="section-title">Virtual Private Server (VPS)</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <h3>VPS Starter</h3>
+                    <div class="price">35k <span>/bulan</span></div>
+                    <ul>
+                        <li>1 vCore CPU</li>
+                        <li>1 GB RAM</li>
+                        <li>30 GB NVMe SSD</li>
+                        <li>1 TB Bandwidth</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="VPS Starter (35k)">Pesan Sekarang</button>
+                </div>
+                <div class="product-card">
+                    <h3>VPS Business</h3>
+                    <div class="price">70k <span>/bulan</span></div>
+                    <ul>
+                        <li>2 vCore CPU</li>
+                        <li>2 GB RAM</li>
+                        <li>60 GB NVMe SSD</li>
+                        <li>2 TB Bandwidth</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="VPS Business (70k)">Pesan Sekarang</button>
+                </div>
+                <div class="product-card">
+                    <h3>VPS Pro</h3>
+                    <div class="price">140k <span>/bulan</span></div>
+                    <ul>
+                        <li>4 vCore CPU</li>
+                        <li>4 GB RAM</li>
+                        <li>120 GB NVMe SSD</li>
+                        <li>4 TB Bandwidth</li>
+                    </ul>
+                    <button class="btn order-btn" data-product="VPS Pro (140k)">Pesan Sekarang</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="order-section">
+            <h2 class="section-title">Form Pemesanan</h2>
+
+            <div class="payment-section">
+                <h4>1. Lakukan Pembayaran via QRIS</h4>
+                <p>Silakan scan salah satu QR Code di bawah ini sesuai dengan harga produk yang Anda pilih.</p>
+                <div class="qris-images">
+                    <figure>
+                        <img src="https://i.ibb.co/YyVj1j3/qris-dana.png" alt="QRIS Dana">
+                        <figcaption>DANA</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="https://i.ibb.co/svtqJ7S/qris-gopay.png" alt="QRIS GoPay">
+                        <figcaption>GOPAY</figcaption>
+                    </figure>
+                </div>
+                <p>Setelah membayar, <strong>screenshot bukti transfernya</strong> untuk diunggah di formulir bawah.</p>
+            </div>
+            
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="pesanan">Produk yang Dipesan</label>
+                    <input type="text" id="pesanan" name="pesanan" required readonly style="background-color: #e9ecef;">
+                </div>
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" required>
+                </div>
+                <div class="form-group">
+                    <label for="no_wa">Nomor WhatsApp (Aktif)</label>
+                    <input type="tel" id="no_wa" name="no_wa" placeholder="Contoh: 081234567890" required>
+                </div>
+                <div class="form-group">
+                    <label for="email_pembeli">Email (Aktif, untuk kirim data akun)</label>
+                    <input type="email" id="email_pembeli" name="email_pembeli" required>
+                </div>
+                <div class="form-group">
+                    <label for="screenshot">Upload Bukti Pembayaran (SS)</label>
+                    <input type="file" id="screenshot" name="screenshot" accept="image/*" required>
+                </div>
+                <button type="submit" id="submitBtn" class="btn">Kirim Pesanan & Konfirmasi</button>
+            </form>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Daffa Store. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script type="text/javascript">
+        // JavaScript Code
+        (function() {
+            // =================================================================
+            // PENTING: GANTI DENGAN KUNCI API DARI AKUN EMAILJS ANDA
+            // =================================================================
+            emailjs.init({
+                publicKey: "GANTI_DENGAN_PUBLIC_KEY_ANDA", 
+            });
+        })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderForm = document.getElementById('orderForm');
+            const orderButtons = document.querySelectorAll('.order-btn');
+            const pesananInput = document.getElementById('pesanan');
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            // --- Fungsi untuk mengisi form ketika tombol Pesan di klik ---
+            orderButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = this.getAttribute('data-product');
+                    pesananInput.value = product;
+                    // Scroll ke form pemesanan
+                    document.getElementById('order-section').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // --- Fungsi untuk mengirim email ---
+            orderForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Tampilkan loading spinner
+                loadingOverlay.style.display = 'flex';
+
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Mengirim...';
+
+                // Ambil file yang diupload
+                const file = document.getElementById('screenshot').files[0];
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = function(e) {
+                        const fileData = e.target.result;
+
+                        // Siapkan parameter untuk template EmailJS
+                        const templateParams = {
+                            nama: document.getElementById('nama').value,
+                            no_wa: document.getElementById('no_wa').value,
+                            email_pembeli: document.getElementById('email_pembeli').value,
+                            pesanan: document.getElementById('pesanan').value,
+                            screenshot_data: fileData, // Data file dalam bentuk base64
+                        };
+                        
+                        // =================================================================
+                        // PENTING: GANTI DENGAN SERVICE ID & TEMPLATE ID ANDA
+                        // =================================================================
+                        const serviceID = 'GANTI_DENGAN_SERVICE_ID_ANDA';
+                        const templatePenjualID = 'GANTI_DENGAN_TEMPLATE_ID_PENJUAL';
+                        const templatePembeliID = 'GANTI_DENGAN_TEMPLATE_ID_PEMBELI';
+
+                        // Kirim email ke PENJUAL terlebih dahulu
+                        emailjs.send(serviceID, templatePenjualID, templateParams)
+                            .then(() => {
+                                // Jika berhasil, kirim email konfirmasi ke PEMBELI
+                                return emailjs.send(serviceID, templatePembeliID, templateParams);
+                            })
+                            .then(() => {
+                                // Jika kedua email berhasil terkirim
+                                alert('Pesanan Berhasil Dikirim! Cek email Anda untuk konfirmasi. Kami akan segera mengirim data akun Anda.');
+                                orderForm.reset();
+                            })
+                            .catch((err) => {
+                                // Jika ada error
+                                alert('Gagal mengirim pesanan. Silakan coba lagi.\nError: ' + JSON.stringify(err));
+                            })
+                            .finally(() => {
+                                // Sembunyikan loading dan kembalikan tombol ke state normal
+                                loadingOverlay.style.display = 'none';
+                                submitBtn.disabled = false;
+                                submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
+                            });
+                    };
+                    reader.onerror = function (error) {
+                        alert('Error membaca file: ' + error);
+                        loadingOverlay.style.display = 'none';
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
+                    };
+                } else {
+                    alert('Harap unggah bukti pembayaran!');
+                    loadingOverlay.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Kirim Pesanan & Konfirmasi';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
